@@ -6,15 +6,45 @@ from tensorflow.keras.preprocessing.image import img_to_array
 import pickle
 import os
 import gdown
+import requests
 
 app = Flask(__name__)
 
 # تحقق من وجود النموذج، وإن لم يوجد نزّله من Google Drive
 MODEL_PATH = 'madar_model.h5'
 DRIVE_MODEL_ID = '1-2Jnar9X4rQXlxR1znNBI4rlnGGxsHD1'
-if not os.path.exists(MODEL_PATH):
+
+
+MODEL_PATH = 'madar_model.h5'
+FILE_ID = '1-2Jnar9X4rQXlxR1znNBI4rlnGGxsHD1'
+
+def download_from_google_drive(file_id, dest_path):
     print("📥 Downloading model from Google Drive...")
-    gdown.download("https://drive.google.com/uc?export=download&id=1-2Jnar9X4rQXlxR1znNBI4rlnGGxsHD1", MODEL_PATH, quiet=False)
+    URL = "https://docs.google.com/uc?export=download"
+
+    session = requests.Session()
+    response = session.get(URL, params={'id': file_id}, stream=True)
+
+    def get_confirm_token(response):
+        for key, value in response.cookies.items():
+            if key.startswith('download_warning'):
+                return value
+        return None
+
+    token = get_confirm_token(response)
+    if token:
+        params = {'id': file_id, 'confirm': token}
+        response = session.get(URL, params=params, stream=True)
+
+    with open(dest_path, "wb") as f:
+        for chunk in response.iter_content(32768):
+            if chunk:
+                f.write(chunk)
+    print("✅ Model downloaded!")
+
+if not os.path.exists(MODEL_PATH):
+    download_from_google_drive(FILE_ID, MODEL_PATH)
+
 
 
 # تحميل النموذج والترميز
