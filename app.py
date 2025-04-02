@@ -14,7 +14,8 @@ MODEL_PATH = 'madar_model.h5'
 DRIVE_MODEL_ID = '1-2Jnar9X4rQXlxR1znNBI4rlnGGxsHD1'
 if not os.path.exists(MODEL_PATH):
     print("📥 Downloading model from Google Drive...")
-    gdown.download(f"https://drive.google.com/uc?id={DRIVE_MODEL_ID}", MODEL_PATH, quiet=False)
+    gdown.download("https://drive.google.com/uc?export=download&id=1-2Jnar9X4rQXlxR1znNBI4rlnGGxsHD1", MODEL_PATH, quiet=False)
+
 
 # تحميل النموذج والترميز
 model = load_model(MODEL_PATH)
