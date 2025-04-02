@@ -5,4 +5,4 @@ numpy==1.24.4
 Pillow
 gdown==4.7.1
 scikit-learn
-
+requests
