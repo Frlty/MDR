@@ -9,13 +9,14 @@ import requests
 
 app = Flask(__name__)
 
+# معلومات النموذج
 MODEL_PATH = 'madar_model.keras'
 FILE_ID = '18O94wPYQ4Oa4Waa-eEV3h-O3Y5znZL0I'
 
+# وظيفة لتحميل النموذج من Google Drive
 def download_from_google_drive(file_id, dest_path):
     print("📥 Downloading model from Google Drive...")
     URL = "https://docs.google.com/uc?export=download"
-
     session = requests.Session()
     response = session.get(URL, params={'id': file_id}, stream=True)
 
@@ -40,9 +41,10 @@ def download_from_google_drive(file_id, dest_path):
 if not os.path.exists(MODEL_PATH):
     download_from_google_drive(FILE_ID, MODEL_PATH)
 
-# تحميل النموذج بصيغة KERAS الحديثة
-model = load_model(MODEL_PATH, compile=False)
+# تحميل النموذج
+model = load_model(MODEL_PATH)
 
+# تحميل المرمّج (الترميز)
 with open('label_encoder.pkl', 'rb') as f:
     label_encoder = pickle.load(f)
 
@@ -70,16 +72,5 @@ def predict():
     image_array = np.expand_dims(image_array, axis=0) / 255.0
 
     prediction = model.predict(image_array)
-    predicted_class = np.argmax(prediction)
-    class_name = label_encoder.classes_[predicted_class]
-    confidence = float(prediction[0][predicted_class])
-
-    return jsonify({
-        "prediction": class_name,
-        "confidence": round(confidence * 100, 2)
-    })
-
-if __name__ == '__main__':
-    port = int(os.environ.get('PORT', 5000))
-    app.run(host='0.0.0.0', port=port)
+    predicted_class = np.argmax_
 
