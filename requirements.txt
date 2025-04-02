@@ -1,7 +1,8 @@
 flask
 tensorflow==2.15.0
 opencv-python-headless
-numpy==1.21.6
+numpy==1.24.4
 Pillow
 gdown==4.7.1
 scikit-learn
+
