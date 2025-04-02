@@ -6,12 +6,11 @@ from tensorflow.keras.preprocessing.image import img_to_array
 import pickle
 import os
 import requests
-import h5py
 
 app = Flask(__name__)
 
-MODEL_PATH = 'madar_model.h5'
-FILE_ID = '1-2Jnar9X4rQXlxR1znNBI4rlnGGxsHD1'
+MODEL_PATH = 'madar_model.keras'
+FILE_ID = '18O94wPYQ4Oa4Waa-eEV3h-O3Y5znZL0I'
 
 def download_from_google_drive(file_id, dest_path):
     print("📥 Downloading model from Google Drive...")
@@ -41,11 +40,7 @@ def download_from_google_drive(file_id, dest_path):
 if not os.path.exists(MODEL_PATH):
     download_from_google_drive(FILE_ID, MODEL_PATH)
 
-# إصلاح مشكلة batch_shape في h5 إذا ظهرت
-with h5py.File(MODEL_PATH, 'r+') as f:
-    if 'keras_version' in f.attrs:
-        del f.attrs['keras_version']
-
+# تحميل النموذج بصيغة KERAS الحديثة
 model = load_model(MODEL_PATH, compile=False)
 
 with open('label_encoder.pkl', 'rb') as f:
@@ -87,3 +82,4 @@ def predict():
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
     app.run(host='0.0.0.0', port=port)
+
