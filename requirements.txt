@@ -1,7 +1,7 @@
 flask
-tensorflow
+tensorflow==2.11.0
 opencv-python-headless
-numpy
+numpy==1.21.6
 Pillow
-gdown
-requirements.txt
+gdown==4.7.1
+scikit-learn
