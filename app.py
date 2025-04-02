@@ -5,15 +5,10 @@ from tensorflow.keras.models import load_model
 from tensorflow.keras.preprocessing.image import img_to_array
 import pickle
 import os
-import gdown
 import requests
+import h5py
 
 app = Flask(__name__)
-
-# تحقق من وجود النموذج، وإن لم يوجد نزّله من Google Drive
-MODEL_PATH = 'madar_model.h5'
-DRIVE_MODEL_ID = '1-2Jnar9X4rQXlxR1znNBI4rlnGGxsHD1'
-
 
 MODEL_PATH = 'madar_model.h5'
 FILE_ID = '1-2Jnar9X4rQXlxR1znNBI4rlnGGxsHD1'
@@ -42,13 +37,17 @@ def download_from_google_drive(file_id, dest_path):
                 f.write(chunk)
     print("✅ Model downloaded!")
 
+# تحميل النموذج إذا لم يكن موجودًا
 if not os.path.exists(MODEL_PATH):
     download_from_google_drive(FILE_ID, MODEL_PATH)
 
+# إصلاح مشكلة batch_shape في h5 إذا ظهرت
+with h5py.File(MODEL_PATH, 'r+') as f:
+    if 'keras_version' in f.attrs:
+        del f.attrs['keras_version']
 
+model = load_model(MODEL_PATH, compile=False)
 
-# تحميل النموذج والترميز
-model = load_model(MODEL_PATH)
 with open('label_encoder.pkl', 'rb') as f:
     label_encoder = pickle.load(f)
 
